@@ -66,7 +66,7 @@ export default function OnboardingPage() {
         if (!quiz || !form) {
           setState((prev) => ({
             ...prev,
-            error: 'No pudimos cargar los datos del cuestionario. Por favor, intenta más tarde.',
+            error: 'Failed to load assessment data. Please try again later.',
             loading: false,
           }))
           return
@@ -133,7 +133,7 @@ export default function OnboardingPage() {
             onClick={() => router.push('/auth/login')}
             className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light transition-all"
           >
-            Volver al inicio de sesión
+            Return to Login
           </button>
         </div>
       </div>
@@ -146,16 +146,16 @@ export default function OnboardingPage() {
       <div className="min-h-screen bg-bicicleta-bg flex items-center justify-center p-4">
         <div className="bg-bicicleta-surface border-2 border-bicicleta-border rounded-lg p-8 max-w-md">
           <h1 className="text-2xl font-bold text-bicicleta-text mb-4">
-            Datos no disponibles
+            Data Unavailable
           </h1>
           <p className="text-bicicleta-text-muted mb-6">
-            No pudimos cargar los datos necesarios. Por favor, intenta más tarde.
+            Failed to load the required data. Please try again later.
           </p>
           <button
             onClick={() => router.push('/dashboard')}
             className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light transition-all"
           >
-            Ir al panel
+            Go to Dashboard
           </button>
         </div>
       </div>
@@ -168,16 +168,16 @@ export default function OnboardingPage() {
       <div className="min-h-screen bg-bicicleta-bg flex items-center justify-center p-4">
         <div className="bg-bicicleta-surface border-2 border-bicicleta-border rounded-lg p-8 max-w-md">
           <h1 className="text-2xl font-bold text-bicicleta-text mb-4">
-            Error al crear sesión
+            Session Creation Error
           </h1>
           <p className="text-bicicleta-text-muted mb-6">
-            No pudimos crear tu sesión. Por favor, intenta de nuevo.
+            Failed to create your session. Please try again.
           </p>
           <button
             onClick={() => window.location.reload()}
             className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light transition-all"
           >
-            Reintentar
+            Retry
           </button>
         </div>
       </div>
@@ -221,11 +221,13 @@ export default function OnboardingPage() {
       const answers = state.quizAnswers
       let correctCount = 0
 
+      const optionLetters = ['a', 'b', 'c'] as const
       quiz.questions.forEach((question) => {
         const answer = answers[question.id]
         if (answer !== undefined) {
           const selectedIndex = parseInt(answer)
-          if (question.options[selectedIndex]?.isCorrect) {
+          const selectedLetter = optionLetters[selectedIndex]
+          if (selectedLetter === question.correctOption) {
             correctCount++
           }
         }
@@ -236,7 +238,7 @@ export default function OnboardingPage() {
       if (!userId) {
         setState((prev) => ({
           ...prev,
-          error: 'Session expired',
+          error: 'Session expired. Please log in again.',
         }))
         return
       }
@@ -253,7 +255,7 @@ export default function OnboardingPage() {
       if (!success) {
         setState((prev) => ({
           ...prev,
-          error: 'Error saving quiz attempt',
+          error: 'Failed to save assessment. Please try again.',
         }))
         return
       }
@@ -278,7 +280,7 @@ export default function OnboardingPage() {
       if (!session?.user?.id) {
         setState((prev) => ({
           ...prev,
-          error: 'Session expired',
+          error: 'Session expired. Please log in again.',
         }))
         return
       }
@@ -300,7 +302,7 @@ export default function OnboardingPage() {
       if (!success) {
         setState((prev) => ({
           ...prev,
-          error: 'Error saving form answers',
+          error: 'Failed to save form data. Please try again.',
         }))
         return
       }
@@ -310,7 +312,7 @@ export default function OnboardingPage() {
       if (!completed) {
         setState((prev) => ({
           ...prev,
-          error: 'Error completing engagement',
+          error: 'Failed to complete assessment. Please try again.',
         }))
         return
       }
@@ -320,7 +322,7 @@ export default function OnboardingPage() {
     } catch (error) {
       setState((prev) => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : 'An unexpected error occurred.',
       }))
     }
   }
@@ -349,7 +351,7 @@ export default function OnboardingPage() {
         if (!engagement) {
           setState((prev) => ({
             ...prev,
-            error: 'Error al crear la sesión. Intenta de nuevo.',
+            error: 'Failed to create session. Please try again.',
             loading: false,
           }))
           return
@@ -366,7 +368,7 @@ export default function OnboardingPage() {
         console.error('Error in handleEmpecemos:', err)
         setState((prev) => ({
           ...prev,
-          error: 'Error al crear la sesión. Intenta de nuevo.',
+          error: 'Failed to create session. Please try again.',
           loading: false,
         }))
       }
@@ -378,12 +380,11 @@ export default function OnboardingPage() {
           <div className="bg-bicicleta-surface border-2 border-bicicleta-border rounded-xl p-8 text-center">
             <div className="mb-6 text-6xl">🚴</div>
             <h1 className="text-3xl font-bold text-bicicleta-text mb-4">
-              ¡Bienvenido a La Bicicleta Financiera!
+              Welcome to La Bicicleta Financiera!
             </h1>
             <p className="text-bicicleta-text-muted mb-8 leading-relaxed">
-              Estás a punto de empezar un camino de transformación en tus finanzas
-              personales. Responde estas preguntas para que podamos personalizar tu
-              acompañamiento.
+              You're about to start a transformation journey in your personal finances.
+              Answer these questions so we can personalize your experience.
             </p>
             {state.error && (
               <div className="p-3 bg-bicicleta-error/20 border-2 border-bicicleta-error rounded-lg text-bicicleta-error text-sm mb-4">
@@ -395,7 +396,7 @@ export default function OnboardingPage() {
               disabled={state.loading}
               className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {state.loading ? 'Cargando...' : 'Empecemos'}
+              {state.loading ? 'Loading...' : 'Start'}
             </button>
           </div>
         </div>
@@ -411,7 +412,7 @@ export default function OnboardingPage() {
           <h1 className="text-2xl font-bold text-bicicleta-text mb-1">
             🚴 La Bicicleta Financiera
           </h1>
-          <p className="text-bicicleta-text-muted text-sm">Evaluación inicial</p>
+          <p className="text-bicicleta-text-muted text-sm">Initial Assessment</p>
         </div>
       </div>
 
@@ -446,10 +447,10 @@ export default function OnboardingPage() {
             ))}
           </div>
           <div className="flex justify-between mt-4 text-xs text-bicicleta-text-muted">
-            <span>Quiz</span>
-            <span>Datos básicos</span>
-            <span>Historial</span>
-            <span>Finanzas</span>
+            <span>Assessment</span>
+            <span>Section 1</span>
+            <span>Section 2</span>
+            <span>Section 3</span>
           </div>
         </div>
 
@@ -488,7 +489,7 @@ export default function OnboardingPage() {
               disabled={state.currentStep === 0}
               className="px-6 py-3 bg-bicicleta-surface2 border-2 border-bicicleta-border text-bicicleta-text font-semibold rounded-lg hover:border-bicicleta-accent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              Atrás
+              Back
             </button>
 
             {state.currentStep < totalSteps - 1 ? (
@@ -497,7 +498,7 @@ export default function OnboardingPage() {
                 disabled={!canAdvance()}
                 className="px-6 py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Siguiente
+                Next
               </button>
             ) : (
               <button
@@ -505,7 +506,7 @@ export default function OnboardingPage() {
                 disabled={!canAdvance()}
                 className="px-6 py-3 bg-bicicleta-success text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-success/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Completar
+                Complete
               </button>
             )}
           </div>
@@ -527,60 +528,72 @@ function QuizStep({
   answers: Record<string, string>
   onAnswer: (questionId: string, optionIndex: number) => void
 }) {
+  const optionLetters = ['a', 'b', 'c'] as const
+  const getOptionLetter = (index: number): 'a' | 'b' | 'c' => {
+    const letter = optionLetters[index]
+    if (!letter) throw new Error(`Invalid option index: ${index}`)
+    return letter
+  }
+
   return (
     <div className="space-y-8">
       <h2 className="text-3xl font-bold text-bicicleta-text">
-        Evaluación de conocimientos
+        Financial Knowledge Assessment
       </h2>
       <p className="text-bicicleta-text-muted">
-        Responde las siguientes preguntas para ayudarnos a entender tu nivel de
-        conocimiento financiero.
+        Answer the following questions to help us understand your level of financial
+        knowledge.
       </p>
 
       {quiz.questions.map((question, questionIndex) => {
         const answered = !!answers[question.id]
         const selectedIndex = parseInt(answers[question.id] || '-1')
-        const selectedOption = answered
-          ? question.options[selectedIndex]
-          : null
+        const selectedOptionLetter = answered ? getOptionLetter(selectedIndex) : null
+        const isAnswerCorrect = selectedOptionLetter === question.correctOption
+
+        const options = [
+          { letter: 'A' as const, text: question.optionA },
+          { letter: 'B' as const, text: question.optionB },
+          { letter: 'C' as const, text: question.optionC },
+        ]
 
         return (
           <div key={question.id} className="space-y-4">
             <h3 className="text-lg font-semibold text-bicicleta-text">
-              Pregunta {questionIndex + 1}: {question.text}
+              Question {questionIndex + 1}: {question.question}
             </h3>
 
             <div className="grid grid-cols-1 gap-3">
-              {question.options.map((option, optionIndex) => (
+              {options.map((option, optionIndex) => (
                 <button
                   key={optionIndex}
                   onClick={() => !answered && onAnswer(question.id, optionIndex)}
                   disabled={answered}
                   className={`p-4 text-left border-2 rounded-lg transition-all ${
                     answered && selectedIndex === optionIndex
-                      ? selectedOption?.isCorrect
+                      ? isAnswerCorrect
                         ? 'bg-bicicleta-success/20 border-bicicleta-success text-bicicleta-text'
                         : 'bg-bicicleta-error/20 border-bicicleta-error text-bicicleta-text'
                       : 'border-bicicleta-border bg-bicicleta-bg hover:border-bicicleta-accent text-bicicleta-text'
                   } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                 >
-                  <div className="font-semibold">{option.label}. {option.text}</div>
+                  <div className="font-semibold">{option.letter}. {option.text}</div>
                 </button>
               ))}
             </div>
 
-            {answered && selectedOption && (
+            {answered && (
               <div
                 className={`p-4 rounded-lg border-l-4 ${
-                  selectedOption.isCorrect
+                  isAnswerCorrect
                     ? 'bg-bicicleta-success/10 border-bicicleta-success text-bicicleta-text'
                     : 'bg-bicicleta-error/10 border-bicicleta-error text-bicicleta-text'
                 }`}
               >
                 <p className="font-semibold mb-2">
-                  {selectedOption.isCorrect ? '✓ Correcto' : '✗ Incorrecto'}
+                  {isAnswerCorrect ? '✓ Correct' : '✗ Incorrect'}
                 </p>
-                <p className="text-sm">{selectedOption.explanation}</p>
+                <p className="text-sm">{question.explanation}</p>
               </div>
             )}
           </div>
@@ -609,7 +622,7 @@ function FormStep({
           {section.title}
         </h2>
         <p className="text-bicicleta-text-muted">
-          Completa la información solicitada
+          {section.description || 'Please complete the requested information'}
         </p>
       </div>
 
@@ -642,41 +655,41 @@ function FormField({
   return (
     <div className="space-y-2">
       <label className="block text-bicicleta-text font-medium">
-        {question.text}
+        {question.label}
         {question.required && <span className="text-bicicleta-error ml-1">*</span>}
       </label>
 
-      {question.field_type === 'text' && (
+      {question.fieldType === 'text' && (
         <input
           type="text"
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Ingresa tu respuesta"
+          placeholder={question.placeholder || 'Enter your answer'}
           className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 transition-all"
         />
       )}
 
-      {question.field_type === 'number' && (
+      {question.fieldType === 'number' && (
         <input
           type="number"
           value={value || ''}
           onChange={(e) => onChange(e.target.value ? parseFloat(e.target.value) : '')}
-          placeholder="Ingresa un número"
+          placeholder={question.placeholder || 'Enter a number'}
           className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 transition-all"
         />
       )}
 
-      {question.field_type === 'textarea' && (
+      {question.fieldType === 'textarea' && (
         <textarea
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Ingresa tu respuesta"
+          placeholder={question.placeholder || 'Enter your answer'}
           rows={4}
           className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 transition-all"
         />
       )}
 
-      {question.field_type === 'radio' && question.options && (
+      {question.fieldType === 'radio' && question.options && (
         <div className="flex flex-wrap gap-3">
           {question.options.map((option: any) => (
             <button
@@ -694,7 +707,7 @@ function FormField({
         </div>
       )}
 
-      {question.field_type === 'checkbox' && question.options && (
+      {question.fieldType === 'checkbox' && question.options && (
         <div className="flex flex-wrap gap-3">
           {question.options.map((option: any) => {
             const selected = Array.isArray(value) ? value.includes(option.value) : false
@@ -723,13 +736,13 @@ function FormField({
         </div>
       )}
 
-      {question.field_type === 'select' && question.options && (
+      {question.fieldType === 'select' && question.options && (
         <select
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 transition-all"
         >
-          <option value="">Selecciona una opción</option>
+          <option value="">Select an option</option>
           {question.options.map((option: any) => (
             <option key={option.value} value={option.value}>
               {option.label}

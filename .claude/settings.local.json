@@ -7,7 +7,10 @@
       "Bash(npm audit fix)",
       "Bash(npm audit fix --force)",
       "Bash(npm install @supabase/supabase-js @supabase/ssr)",
-      "Bash(npm install react-hook-form zod @hookform/resolvers)"
+      "Bash(npm install react-hook-form zod @hookform/resolvers)",
+      "Bash(npm run build)",
+      "Bash(git add -A)",
+      "Bash(git commit -m \"Fix onboarding data loading with correct database schema:*)"
     ]
   }
 }

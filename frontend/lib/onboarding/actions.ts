@@ -2,51 +2,63 @@
 
 import { createClient as createServerClient } from '@/lib/supabase/server'
 
+/**
+ * Quiz types matching the actual database schema
+ */
 export interface QuizQuestion {
   id: string
-  text: string
-  options: Array<{
-    label: string
-    text: string
-    isCorrect: boolean
-    explanation: string
-  }>
+  question: string
+  optionA: string
+  optionB: string
+  optionC: string
+  correctOption: 'a' | 'b' | 'c'
+  explanation: string
+  topic: string
 }
 
 export interface Quiz {
   id: string
+  title: string
+  description: string
   type: string
   questions: QuizQuestion[]
 }
 
+/**
+ * Form types matching the actual database schema
+ */
 export interface FormQuestion {
   id: string
-  text: string
-  position: number
-  field_type: string
-  options?: Array<{ label: string; value: string }>
+  label: string
+  fieldType: 'text' | 'number' | 'radio' | 'checkbox' | 'select' | 'textarea'
+  options?: Array<{ value: string; label: string }>
+  placeholder?: string
   required: boolean
+  position: number
 }
 
 export interface FormSection {
   id: string
-  position: number
   title: string
+  description: string
+  position: number
   questions: FormQuestion[]
 }
 
 export interface Form {
   id: string
+  title: string
+  description: string
   type: string
   sections: FormSection[]
 }
 
 export interface Engagement {
   id: string
-  user_id: string
-  status: string
-  engagement_number: number
+  userId: string
   title: string
+  engagementNumber: number
+  status: 'pending' | 'active' | 'completed'
 }
 
 /**
@@ -57,35 +69,36 @@ export async function getActiveQuiz(): Promise<Quiz | null> {
 
   try {
     // Fetch active quiz
-    const { data: quizzes, error: quizError } = await supabase
+    const { data: quiz, error: quizError } = await supabase
       .from('quizzes')
-      .select('id, type')
+      .select('id, title, description, type')
       .eq('type', 'onboarding')
       .eq('active', true)
-      .single()
+      .limit(1)
+      .maybeSingle()
 
-    if (quizError || !quizzes) {
+    if (quizError || !quiz) {
       console.error('Failed to fetch quiz:', quizError)
       return null
     }
 
-    // Fetch quiz questions through the mapping table
+    // Fetch question IDs and positions from quiz_question_map
     const { data: questionMaps, error: mapError } = await supabase
       .from('quiz_question_map')
       .select('question_id, position')
-      .eq('quiz_id', quizzes.id)
+      .eq('quiz_id', quiz.id)
       .order('position', { ascending: true })
 
-    if (mapError || !questionMaps) {
+    if (mapError || !questionMaps || questionMaps.length === 0) {
       console.error('Failed to fetch question map:', mapError)
       return null
     }
 
-    // Fetch actual questions
+    // Fetch actual questions from quiz_questions table
     const questionIds = questionMaps.map((m) => m.question_id)
     const { data: questions, error: questionsError } = await supabase
       .from('quiz_questions')
-      .select('id, text, options')
+      .select('id, question, option_a, option_b, option_c, correct_option, explanation, topic')
       .in('id', questionIds)
 
     if (questionsError || !questions) {
@@ -93,15 +106,29 @@ export async function getActiveQuiz(): Promise<Quiz | null> {
       return null
     }
 
-    // Order questions by position from the map
-    const orderedQuestions = questionMaps.map((map) => {
-      const question = questions.find((q) => q.id === map.question_id)
-      return question as QuizQuestion
-    })
+    // Order questions by position from the map and transform to camelCase
+    const orderedQuestions = questionMaps
+      .map((map) => {
+        const question = questions.find((q) => q.id === map.question_id)
+        if (!question) return null
+        return {
+          id: question.id,
+          question: question.question,
+          optionA: question.option_a,
+          optionB: question.option_b,
+          optionC: question.option_c,
+          correctOption: question.correct_option as 'a' | 'b' | 'c',
+          explanation: question.explanation,
+          topic: question.topic,
+        }
+      })
+      .filter((q) => q !== null) as QuizQuestion[]
 
     return {
-      id: quizzes.id,
-      type: quizzes.type,
+      id: quiz.id,
+      title: quiz.title,
+      description: quiz.description,
+      type: quiz.type,
       questions: orderedQuestions,
     }
   } catch (error) {
@@ -118,14 +145,15 @@ export async function getActiveForm(): Promise<Form | null> {
 
   try {
     // Fetch active form
-    const { data: forms, error: formError } = await supabase
+    const { data: form, error: formError } = await supabase
       .from('forms')
-      .select('id, type')
+      .select('id, title, description, type')
       .eq('type', 'onboarding')
       .eq('active', true)
-      .single()
+      .limit(1)
+      .maybeSingle()
 
-    if (formError || !forms) {
+    if (formError || !form) {
       console.error('Failed to fetch form:', formError)
       return null
     }
@@ -133,11 +161,11 @@ export async function getActiveForm(): Promise<Form | null> {
     // Fetch form sections
     const { data: sections, error: sectionsError } = await supabase
       .from('form_sections')
-      .select('id, position, title')
-      .eq('form_id', forms.id)
+      .select('id, title, description, position')
+      .eq('form_id', form.id)
       .order('position', { ascending: true })
 
-    if (sectionsError || !sections) {
+    if (sectionsError || !sections || sections.length === 0) {
       console.error('Failed to fetch sections:', sectionsError)
       return null
     }
@@ -146,8 +174,9 @@ export async function getActiveForm(): Promise<Form | null> {
     const sectionIds = sections.map((s) => s.id)
     const { data: questions, error: questionsError } = await supabase
       .from('form_questions')
-      .select('id, section_id, text, position, field_type, options, required')
+      .select('id, section_id, label, field_type, options, placeholder, required, position')
       .in('section_id', sectionIds)
+      .eq('active', true)
       .order('position', { ascending: true })
 
     if (questionsError || !questions) {
@@ -155,15 +184,30 @@ export async function getActiveForm(): Promise<Form | null> {
       return null
     }
 
-    // Group questions by section
+    // Group questions by section and transform to camelCase
     const sectionsWithQuestions = sections.map((section) => ({
-      ...section,
-      questions: questions.filter((q) => q.section_id === section.id),
+      id: section.id,
+      title: section.title,
+      description: section.description,
+      position: section.position,
+      questions: questions
+        .filter((q) => q.section_id === section.id)
+        .map((q) => ({
+          id: q.id,
+          label: q.label,
+          fieldType: q.field_type as FormQuestion['fieldType'],
+          options: q.options as Array<{ value: string; label: string }> | undefined,
+          placeholder: q.placeholder || undefined,
+          required: q.required,
+          position: q.position,
+        })),
     }))
 
     return {
-      id: forms.id,
-      type: forms.type,
+      id: form.id,
+      title: form.title,
+      description: form.description,
+      type: form.type,
       sections: sectionsWithQuestions,
     }
   } catch (error) {
@@ -175,23 +219,19 @@ export async function getActiveForm(): Promise<Form | null> {
 /**
  * Create initial engagement for user
  */
-export async function createEngagement(
-  userId: string
-): Promise<Engagement | null> {
+export async function createEngagement(userId: string): Promise<Engagement | null> {
   const supabase = await createServerClient()
 
   try {
     // Insert engagement
-    const { error: insertError } = await supabase
-      .from('engagements')
-      .insert([
-        {
-          user_id: userId,
-          status: 'active',
-          engagement_number: 1,
-          title: 'Sesión inicial',
-        },
-      ])
+    const { error: insertError } = await supabase.from('engagements').insert([
+      {
+        user_id: userId,
+        status: 'active',
+        engagement_number: 1,
+        title: 'Initial Assessment Session',
+      },
+    ])
 
     if (insertError) {
       console.error('Failed to insert engagement:', insertError)
@@ -206,14 +246,25 @@ export async function createEngagement(
       .eq('status', 'active')
       .order('created_at', { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     if (selectError) {
       console.error('Failed to fetch created engagement:', selectError)
       return null
     }
 
-    return data
+    if (!data) {
+      console.error('No engagement data returned after insert')
+      return null
+    }
+
+    return {
+      id: data.id,
+      userId: data.user_id,
+      status: data.status,
+      engagementNumber: data.engagement_number,
+      title: data.title,
+    }
   } catch (error) {
     console.error('Error creating engagement:', error)
     return null
@@ -223,9 +274,7 @@ export async function createEngagement(
 /**
  * Get user's engagement, creating one if it doesn't exist
  */
-export async function getOrCreateEngagement(
-  userId: string
-): Promise<Engagement | null> {
+export async function getOrCreateEngagement(userId: string): Promise<Engagement | null> {
   const supabase = await createServerClient()
 
   try {
@@ -234,10 +283,16 @@ export async function getOrCreateEngagement(
       .from('engagements')
       .select('id, user_id, status, engagement_number, title')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     if (!checkError && existing) {
-      return existing
+      return {
+        id: existing.id,
+        userId: existing.user_id,
+        status: existing.status,
+        engagementNumber: existing.engagement_number,
+        title: existing.title,
+      }
     }
 
     // Create new engagement
@@ -262,7 +317,6 @@ export async function hasCompletedEngagement(userId: string): Promise<boolean> {
       .eq('status', 'completed')
       .limit(1)
 
-    // If there's an error or no data, return false
     if (error || !data || data.length === 0) {
       return false
     }
@@ -336,9 +390,7 @@ export async function saveFormAnswers(
       value: answer.value,
     }))
 
-    const { error } = await supabase
-      .from('form_answers')
-      .insert(answersToInsert)
+    const { error } = await supabase.from('form_answers').insert(answersToInsert)
 
     if (error) {
       console.error('Failed to save form answers:', error)
@@ -355,9 +407,7 @@ export async function saveFormAnswers(
 /**
  * Mark engagement as completed
  */
-export async function completeEngagement(
-  engagementId: string
-): Promise<boolean> {
+export async function completeEngagement(engagementId: string): Promise<boolean> {
   const supabase = await createServerClient()
 
   try {
