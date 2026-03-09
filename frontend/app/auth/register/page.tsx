@@ -4,134 +4,239 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthCard } from '@/components/auth/AuthCard'
 import { OtpInput } from '@/components/auth/OtpInput'
-import { sendOtp, verifyOtp, createProfile } from '@/lib/auth/actions'
+import {
+  sendOtp,
+  verifyOtp,
+  signUpWithPassword,
+  createProfile,
+} from '@/lib/auth/actions'
 
-type Step = 'form' | 'otp'
+type AuthMethod = 'choice' | 'otp' | 'password'
+type Step = 'form' | 'verify'
+
+interface RegisterState {
+  method: AuthMethod
+  step: Step
+  email: string
+  password: string
+  passwordConfirm: string
+  fullName: string
+  error: string
+  loading: boolean
+}
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [step, setStep] = useState<Step>('form')
-  const [email, setEmail] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [state, setState] = useState<RegisterState>({
+    method: 'choice',
+    step: 'form',
+    email: '',
+    password: '',
+    passwordConfirm: '',
+    fullName: '',
+    error: '',
+    loading: false,
+  })
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  const selectAuthMethod = (method: 'otp' | 'password') => {
+    setState((prev) => ({
+      ...prev,
+      method,
+      error: '',
+      email: '',
+      password: '',
+      passwordConfirm: '',
+      fullName: '',
+      step: 'form',
+    }))
+  }
+
+  // OTP Registration Flow
+  const handleOtpFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    setLoading(true)
+    setState((prev) => ({ ...prev, error: '', loading: true }))
 
     try {
-      // Validate inputs
-      if (!email || !email.includes('@')) {
-        setError('Por favor ingresa un correo electrónico válido')
-        setLoading(false)
+      if (!state.email || !state.email.includes('@')) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Por favor ingresa un correo válido',
+          loading: false,
+        }))
         return
       }
 
-      if (!fullName.trim()) {
-        setError('Por favor ingresa tu nombre completo')
-        setLoading(false)
+      if (!state.fullName.trim()) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Por favor ingresa tu nombre completo',
+          loading: false,
+        }))
         return
       }
 
-      // Send OTP with shouldCreateUser=true
-      await sendOtp(email, true)
-      setStep('otp')
+      await sendOtp(state.email, true)
+      setState((prev) => ({ ...prev, step: 'verify', loading: false }))
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al enviar el código'
-      if (errorMessage.includes('already registered') || errorMessage.includes('already exists')) {
-        setError('Este correo ya está registrado. ¿Deseas iniciar sesión?')
-      } else {
-        setError(errorMessage)
-      }
-    } finally {
-      setLoading(false)
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error al enviar el código'
+      setState((prev) => ({
+        ...prev,
+        error: errorMessage.includes('rate limit')
+          ? 'Demasiados intentos. Intenta en unos minutos.'
+          : 'Error al registrarse',
+        loading: false,
+      }))
     }
   }
 
-  const handleOtpComplete = async (otp: string) => {
-    setError('')
-    setLoading(true)
+  const handleOtpVerify = async (otp: string) => {
+    setState((prev) => ({ ...prev, error: '', loading: true }))
 
     try {
-      // Verify OTP
-      const { data } = await verifyOtp(email, otp)
+      const { data } = await verifyOtp(state.email, otp)
 
       if (!data.user?.id) {
-        setError('Error al verificar el código')
+        setState((prev) => ({
+          ...prev,
+          error: 'Error al verificar el código',
+          loading: false,
+        }))
         return
       }
 
-      // Create user profile
-      await createProfile(data.user.id, email, fullName, 'client')
+      await createProfile(
+        data.user.id,
+        state.email,
+        state.fullName,
+        'client'
+      )
 
-      // Redirect to onboarding
       router.push('/auth/onboarding')
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al registrarse'
-      setError(errorMessage)
-      setStep('form')
-    } finally {
-      setLoading(false)
+      setState((prev) => ({
+        ...prev,
+        error: 'Código incorrecto o expirado',
+        step: 'form',
+        loading: false,
+      }))
     }
   }
 
-  if (step === 'form') {
+  // Password Registration Flow
+  const handlePasswordFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setState((prev) => ({ ...prev, error: '', loading: true }))
+
+    try {
+      if (!state.email || !state.email.includes('@')) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Por favor ingresa un correo válido',
+          loading: false,
+        }))
+        return
+      }
+
+      if (!state.fullName.trim()) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Por favor ingresa tu nombre completo',
+          loading: false,
+        }))
+        return
+      }
+
+      if (!state.password || state.password.length < 6) {
+        setState((prev) => ({
+          ...prev,
+          error: 'La contraseña debe tener al menos 6 caracteres',
+          loading: false,
+        }))
+        return
+      }
+
+      if (state.password !== state.passwordConfirm) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Las contraseñas no coinciden',
+          loading: false,
+        }))
+        return
+      }
+
+      const { data } = await signUpWithPassword(state.email, state.password)
+
+      if (!data.user?.id) {
+        setState((prev) => ({
+          ...prev,
+          error: 'Error al registrarse',
+          loading: false,
+        }))
+        return
+      }
+
+      // Create profile
+      await createProfile(
+        data.user.id,
+        state.email,
+        state.fullName,
+        'client'
+      )
+
+      router.push('/auth/onboarding')
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error al registrarse'
+      setState((prev) => ({
+        ...prev,
+        error: errorMessage.includes('already')
+          ? 'Este correo ya está registrado'
+          : errorMessage,
+        loading: false,
+      }))
+    }
+  }
+
+  // Choice screen
+  if (state.method === 'choice') {
     return (
       <AuthCard
         title="Crea tu cuenta"
-        subtitle="Únete a La Bicicleta Financiera"
+        subtitle="Elige tu método de registro"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-primary-text mb-2">
-              Nombre completo
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Tu nombre"
-              disabled={loading}
-              className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-primary-text mb-2">
-              Correo electrónico
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@correo.com"
-              disabled={loading}
-              className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            />
-          </div>
-
-          {error && (
-            <div className="p-3 bg-red-500/20 border-2 border-red-500/40 rounded-lg text-red-200 text-sm">
-              {error}
-            </div>
-          )}
+        <div className="space-y-4">
+          <button
+            onClick={() => selectAuthMethod('otp')}
+            className="w-full p-4 border-2 border-primary-border bg-primary-bg rounded-lg hover:border-primary-accent hover:bg-primary-surface transition-all text-left"
+          >
+            <h3 className="text-primary-accent font-semibold mb-1">
+              Código por correo
+            </h3>
+            <p className="text-primary-text/70 text-sm">
+              Verifica tu identidad con un código de 6 dígitos
+            </p>
+          </button>
 
           <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-primary-accent text-primary-bg font-semibold rounded-lg hover:bg-primary-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            onClick={() => selectAuthMethod('password')}
+            className="w-full p-4 border-2 border-primary-border bg-primary-bg rounded-lg hover:border-primary-accent hover:bg-primary-surface transition-all text-left"
           >
-            {loading ? 'Enviando código...' : 'Continuar'}
+            <h3 className="text-primary-accent font-semibold mb-1">
+              Correo y contraseña
+            </h3>
+            <p className="text-primary-text/70 text-sm">
+              Crea una cuenta con contraseña
+            </p>
           </button>
-        </form>
+        </div>
 
         <div className="mt-6 text-center text-sm text-primary-text/70">
           ¿Ya tienes cuenta?{' '}
-          <a href="/auth/login" className="text-primary-accent hover:underline font-medium">
+          <a
+            href="/auth/login"
+            className="text-primary-accent hover:underline font-medium"
+          >
             Inicia sesión
           </a>
         </div>
@@ -139,47 +244,259 @@ export default function RegisterPage() {
     )
   }
 
+  // OTP Registration
+  if (state.method === 'otp') {
+    if (state.step === 'form') {
+      return (
+        <AuthCard
+          title="Crea tu cuenta"
+          subtitle="Con código por correo"
+        >
+          <form onSubmit={handleOtpFormSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="fullName"
+                className="block text-sm font-medium text-primary-text mb-2"
+              >
+                Nombre completo
+              </label>
+              <input
+                id="fullName"
+                type="text"
+                value={state.fullName}
+                onChange={(e) =>
+                  setState((prev) => ({ ...prev, fullName: e.target.value }))
+                }
+                placeholder="Tu nombre"
+                disabled={state.loading}
+                className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-primary-text mb-2"
+              >
+                Correo electrónico
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={state.email}
+                onChange={(e) =>
+                  setState((prev) => ({ ...prev, email: e.target.value }))
+                }
+                placeholder="tu@correo.com"
+                disabled={state.loading}
+                className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              />
+            </div>
+
+            {state.error && (
+              <div className="p-3 bg-red-500/20 border-2 border-red-500/40 rounded-lg text-red-200 text-sm">
+                {state.error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={state.loading}
+              className="w-full py-3 bg-primary-accent text-primary-bg font-semibold rounded-lg hover:bg-primary-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {state.loading ? 'Enviando código...' : 'Continuar'}
+            </button>
+          </form>
+
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => selectAuthMethod('password')}
+              className="text-sm text-primary-accent hover:underline"
+            >
+              Usar contraseña en su lugar
+            </button>
+          </div>
+        </AuthCard>
+      )
+    }
+
+    // OTP Verification
+    return (
+      <AuthCard
+        title="Verificar código"
+        subtitle="Ingresa el código de 6 dígitos"
+      >
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm text-primary-text/70 mb-6 text-center">
+              Código enviado a:{' '}
+              <span className="text-primary-accent font-medium">
+                {state.email}
+              </span>
+            </p>
+
+            <OtpInput
+              length={6}
+              onComplete={handleOtpVerify}
+              disabled={state.loading}
+            />
+          </div>
+
+          {state.error && (
+            <div className="p-3 bg-red-500/20 border-2 border-red-500/40 rounded-lg text-red-200 text-sm">
+              {state.error}
+            </div>
+          )}
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() =>
+                setState((prev) => ({
+                  ...prev,
+                  step: 'form',
+                  error: '',
+                }))
+              }
+              disabled={state.loading}
+              className="text-sm text-primary-accent hover:underline disabled:opacity-50"
+            >
+              Volver
+            </button>
+          </div>
+
+          <p className="text-xs text-primary-text/50 text-center">
+            El código expira en 15 minutos
+          </p>
+        </div>
+      </AuthCard>
+    )
+  }
+
+  // Password Registration
   return (
     <AuthCard
-      title="Verificar código"
-      subtitle="Ingresa el código de 6 dígitos que recibiste en tu correo"
+      title="Crea tu cuenta"
+      subtitle="Con correo y contraseña"
     >
-      <div className="space-y-6">
+      <form onSubmit={handlePasswordFormSubmit} className="space-y-4">
         <div>
-          <p className="text-sm text-primary-text/70 mb-6 text-center">
-            Código enviado a: <span className="text-primary-accent font-medium">{email}</span>
-          </p>
-
-          <OtpInput
-            length={6}
-            onComplete={handleOtpComplete}
-            disabled={loading}
+          <label
+            htmlFor="fullName"
+            className="block text-sm font-medium text-primary-text mb-2"
+          >
+            Nombre completo
+          </label>
+          <input
+            id="fullName"
+            type="text"
+            value={state.fullName}
+            onChange={(e) =>
+              setState((prev) => ({ ...prev, fullName: e.target.value }))
+            }
+            placeholder="Tu nombre"
+            disabled={state.loading}
+            className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           />
         </div>
 
-        {error && (
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-primary-text mb-2"
+          >
+            Correo electrónico
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={state.email}
+            onChange={(e) =>
+              setState((prev) => ({ ...prev, email: e.target.value }))
+            }
+            placeholder="tu@correo.com"
+            disabled={state.loading}
+            className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-primary-text mb-2"
+          >
+            Contraseña
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={state.password}
+            onChange={(e) =>
+              setState((prev) => ({ ...prev, password: e.target.value }))
+            }
+            placeholder="Mínimo 6 caracteres"
+            disabled={state.loading}
+            className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="passwordConfirm"
+            className="block text-sm font-medium text-primary-text mb-2"
+          >
+            Confirmar contraseña
+          </label>
+          <input
+            id="passwordConfirm"
+            type="password"
+            value={state.passwordConfirm}
+            onChange={(e) =>
+              setState((prev) => ({
+                ...prev,
+                passwordConfirm: e.target.value,
+              }))
+            }
+            placeholder="Confirma tu contraseña"
+            disabled={state.loading}
+            className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          />
+        </div>
+
+        {state.error && (
           <div className="p-3 bg-red-500/20 border-2 border-red-500/40 rounded-lg text-red-200 text-sm">
-            {error}
+            {state.error}
           </div>
         )}
 
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={() => {
-              setStep('form')
-              setError('')
-            }}
-            disabled={loading}
-            className="text-sm text-primary-accent hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Volver
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={state.loading}
+          className="w-full py-3 bg-primary-accent text-primary-bg font-semibold rounded-lg hover:bg-primary-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+        >
+          {state.loading ? 'Creando cuenta...' : 'Crear cuenta'}
+        </button>
+      </form>
 
-        <p className="text-xs text-primary-text/50 text-center">
-          El código expira en 15 minutos
-        </p>
+      <div className="mt-4 text-center">
+        <button
+          type="button"
+          onClick={() => selectAuthMethod('otp')}
+          className="text-sm text-primary-accent hover:underline"
+        >
+          Usar código por correo en su lugar
+        </button>
+      </div>
+
+      <div className="mt-6 text-center text-sm text-primary-text/70">
+        ¿Ya tienes cuenta?{' '}
+        <a
+          href="/auth/login"
+          className="text-primary-accent hover:underline font-medium"
+        >
+          Inicia sesión
+        </a>
       </div>
     </AuthCard>
   )
