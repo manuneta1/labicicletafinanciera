@@ -105,7 +105,7 @@ export function OtpInput({ length = 6, onComplete, disabled = false }: OtpInputP
           onKeyDown={(e) => handleKeyDown(e, index)}
           onPaste={handlePaste}
           disabled={disabled}
-          className="w-14 h-14 text-center text-2xl font-bold bg-primary-surface border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="w-14 h-14 text-center text-2xl font-bold bg-bicicleta-surface border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           aria-label={`Dígito ${index + 1}`}
         />
       ))}
