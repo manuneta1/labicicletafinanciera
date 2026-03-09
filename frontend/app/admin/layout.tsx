@@ -1,10 +1,11 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getDashboardData } from '@/lib/dashboard/actions'
-import { WaitingState } from '@/components/dashboard/WaitingState'
-import { DashboardContent } from '@/components/dashboard/DashboardContent'
 
-export default async function DashboardPage() {
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const supabase = await createClient()
 
   // Check session
@@ -19,17 +20,14 @@ export default async function DashboardPage() {
   // Get user profile to check role
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, full_name')
+    .select('role')
     .eq('id', session.user.id)
     .single()
 
-  // Redirect admins to admin panel
-  if (profile?.role === 'admin') {
-    redirect('/admin')
+  // Redirect non-admins to dashboard
+  if (profile?.role !== 'admin') {
+    redirect('/dashboard')
   }
-
-  // Fetch dashboard data
-  const dashboard = await getDashboardData()
 
   return (
     <div className="min-h-screen bg-bicicleta-bg">
@@ -37,24 +35,13 @@ export default async function DashboardPage() {
       <nav className="border-b-2 border-bicicleta-border bg-bicicleta-surface px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🚲</span>
-          <h1 className="text-xl font-bold text-bicicleta-text">La Bicicleta Financiera</h1>
+          <h1 className="text-xl font-bold text-bicicleta-text">Panel Admin</h1>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-bicicleta-text-muted">
-            Hola, {profile?.full_name} 👋
-          </div>
-          <LogoutButton />
-        </div>
+        <LogoutButton />
       </nav>
 
       {/* Main content */}
-      <main className="max-w-4xl mx-auto p-6">
-        {!dashboard.report ? (
-          <WaitingState />
-        ) : (
-          <DashboardContent dashboard={dashboard} />
-        )}
-      </main>
+      <main className="p-6">{children}</main>
     </div>
   )
 }
