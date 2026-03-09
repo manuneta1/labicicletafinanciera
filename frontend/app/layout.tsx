@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
+import { DM_Sans } from 'next/font/google'
 import './globals.css'
+
+const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '500', '700'] })
 
 export const metadata: Metadata = {
   title: 'La Bicicleta Financiera',
@@ -13,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body className={dmSans.className}>{children}</body>
     </html>
   )
 }

@@ -6,7 +6,8 @@
       "Bash(npm install)",
       "Bash(npm audit fix)",
       "Bash(npm audit fix --force)",
-      "Bash(npm install @supabase/supabase-js @supabase/ssr)"
+      "Bash(npm install @supabase/supabase-js @supabase/ssr)",
+      "Bash(npm install react-hook-form zod @hookform/resolvers)"
     ]
   }
 }
