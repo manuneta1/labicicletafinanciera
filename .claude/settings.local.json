@@ -10,7 +10,9 @@
       "Bash(npm install react-hook-form zod @hookform/resolvers)",
       "Bash(npm run build)",
       "Bash(git add -A)",
-      "Bash(git commit -m \"Fix onboarding data loading with correct database schema:*)"
+      "Bash(git commit -m \"Fix onboarding data loading with correct database schema:*)",
+      "Bash(npm ls)",
+      "Bash(npm install @anthropic-ai/sdk --save)"
     ]
   }
 }
