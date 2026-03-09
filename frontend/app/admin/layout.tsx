@@ -8,20 +8,21 @@ export default async function AdminLayout({
 }) {
   const supabase = await createClient()
 
-  // Check session
+  // Get authenticated user (verifies JWT with Supabase)
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user || error) {
     redirect('/auth/login')
   }
 
-  // Get user profile to check role
+  // Query profiles table to check role
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .single()
 
   // Redirect non-admins to dashboard

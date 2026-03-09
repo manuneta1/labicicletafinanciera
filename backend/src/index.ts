@@ -1,26 +1,15 @@
 import express, { Express, Request, Response, NextFunction } from 'express'
 import cors from 'cors'
-import dotenv from 'dotenv'
 import { requireAuth, requireAdmin } from './middleware/auth'
 import clientsRouter from './routes/clients'
 import reportsRouter from './routes/reports'
 import objectivesRouter from './routes/objectives'
 import tasksRouter from './routes/tasks'
 import dashboardRouter from './routes/dashboard'
-
-dotenv.config()
-
-// Validate environment variables
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
-  throw new Error('Missing required environment variables: SUPABASE_URL, SUPABASE_SERVICE_KEY')
-}
-
-if (!process.env.ANTHROPIC_API_KEY) {
-  throw new Error('Missing required environment variable: ANTHROPIC_API_KEY')
-}
+import { env } from './config/env'
 
 const app: Express = express()
-const port = process.env.PORT || 3001
+const port = Number(env.PORT)
 
 // Middleware
 app.use(cors())

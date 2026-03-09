@@ -1,8 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { Profile, QuizAttempt, QuizQuestion, FormAnswer, FormQuestion } from './types'
+import { env } from '../config/env'
 
 const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+  apiKey: env.ANTHROPIC_API_KEY,
 })
 
 interface ReportGenerationData {
