@@ -97,7 +97,7 @@ export default function DashboardPage() {
               Estamos listos para comenzar tu evaluación inicial. Esta será la base para personalizar tu experiencia con nosotros.
             </p>
             <button
-              onClick={() => router.push('/auth/onboarding')}
+              onClick={() => router.push('/onboarding')}
               className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light transition-all"
             >
               ¡Empecemos!
