@@ -66,7 +66,7 @@ export default function OnboardingPage() {
         if (!quiz || !form) {
           setState((prev) => ({
             ...prev,
-            error: 'Failed to load assessment data. Please try again later.',
+            error: 'No pudimos cargar los datos de la evaluación. Por favor, intenta más tarde.',
             loading: false,
           }))
           return
@@ -133,7 +133,7 @@ export default function OnboardingPage() {
             onClick={() => router.push('/auth/login')}
             className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light transition-all"
           >
-            Return to Login
+            Volver al inicio de sesión
           </button>
         </div>
       </div>
@@ -146,16 +146,16 @@ export default function OnboardingPage() {
       <div className="min-h-screen bg-bicicleta-bg flex items-center justify-center p-4">
         <div className="bg-bicicleta-surface border-2 border-bicicleta-border rounded-lg p-8 max-w-md">
           <h1 className="text-2xl font-bold text-bicicleta-text mb-4">
-            Data Unavailable
+            Datos no disponibles
           </h1>
           <p className="text-bicicleta-text-muted mb-6">
-            Failed to load the required data. Please try again later.
+            No pudimos cargar los datos necesarios. Por favor, intenta más tarde.
           </p>
           <button
             onClick={() => router.push('/dashboard')}
             className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light transition-all"
           >
-            Go to Dashboard
+            Ir al panel
           </button>
         </div>
       </div>
@@ -168,16 +168,16 @@ export default function OnboardingPage() {
       <div className="min-h-screen bg-bicicleta-bg flex items-center justify-center p-4">
         <div className="bg-bicicleta-surface border-2 border-bicicleta-border rounded-lg p-8 max-w-md">
           <h1 className="text-2xl font-bold text-bicicleta-text mb-4">
-            Session Creation Error
+            Error al crear sesión
           </h1>
           <p className="text-bicicleta-text-muted mb-6">
-            Failed to create your session. Please try again.
+            No pudimos crear tu sesión. Por favor, intenta de nuevo.
           </p>
           <button
             onClick={() => window.location.reload()}
             className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light transition-all"
           >
-            Retry
+            Reintentar
           </button>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function OnboardingPage() {
       if (!userId) {
         setState((prev) => ({
           ...prev,
-          error: 'Session expired. Please log in again.',
+          error: 'Tu sesión expiró. Por favor, inicia sesión de nuevo.',
         }))
         return
       }
@@ -255,7 +255,7 @@ export default function OnboardingPage() {
       if (!success) {
         setState((prev) => ({
           ...prev,
-          error: 'Failed to save assessment. Please try again.',
+          error: 'Error al guardar la evaluación. Por favor, intenta de nuevo.',
         }))
         return
       }
@@ -280,7 +280,7 @@ export default function OnboardingPage() {
       if (!session?.user?.id) {
         setState((prev) => ({
           ...prev,
-          error: 'Session expired. Please log in again.',
+          error: 'Tu sesión expiró. Por favor, inicia sesión de nuevo.',
         }))
         return
       }
@@ -302,7 +302,7 @@ export default function OnboardingPage() {
       if (!success) {
         setState((prev) => ({
           ...prev,
-          error: 'Failed to save form data. Please try again.',
+          error: 'Error al guardar los datos del formulario. Por favor, intenta de nuevo.',
         }))
         return
       }
@@ -312,7 +312,7 @@ export default function OnboardingPage() {
       if (!completed) {
         setState((prev) => ({
           ...prev,
-          error: 'Failed to complete assessment. Please try again.',
+          error: 'Error al completar la evaluación. Por favor, intenta de nuevo.',
         }))
         return
       }
@@ -322,7 +322,7 @@ export default function OnboardingPage() {
     } catch (error) {
       setState((prev) => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'An unexpected error occurred.',
+        error: error instanceof Error ? error.message : 'Ocurrió un error inesperado.',
       }))
     }
   }
@@ -351,7 +351,7 @@ export default function OnboardingPage() {
         if (!engagement) {
           setState((prev) => ({
             ...prev,
-            error: 'Failed to create session. Please try again.',
+            error: 'Error al crear la sesión. Intenta de nuevo.',
             loading: false,
           }))
           return
@@ -368,7 +368,7 @@ export default function OnboardingPage() {
         console.error('Error in handleEmpecemos:', err)
         setState((prev) => ({
           ...prev,
-          error: 'Failed to create session. Please try again.',
+          error: 'Error al crear la sesión. Intenta de nuevo.',
           loading: false,
         }))
       }
@@ -396,7 +396,7 @@ export default function OnboardingPage() {
               disabled={state.loading}
               className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {state.loading ? 'Loading...' : 'Start'}
+              {state.loading ? 'Cargando...' : 'Empecemos'}
             </button>
           </div>
         </div>
@@ -412,7 +412,7 @@ export default function OnboardingPage() {
           <h1 className="text-2xl font-bold text-bicicleta-text mb-1">
             🚴 La Bicicleta Financiera
           </h1>
-          <p className="text-bicicleta-text-muted text-sm">Initial Assessment</p>
+          <p className="text-bicicleta-text-muted text-sm">Evaluación inicial</p>
         </div>
       </div>
 
@@ -447,10 +447,10 @@ export default function OnboardingPage() {
             ))}
           </div>
           <div className="flex justify-between mt-4 text-xs text-bicicleta-text-muted">
-            <span>Assessment</span>
-            <span>Section 1</span>
-            <span>Section 2</span>
-            <span>Section 3</span>
+            <span>Evaluación</span>
+            <span>Sección 1</span>
+            <span>Sección 2</span>
+            <span>Sección 3</span>
           </div>
         </div>
 
@@ -489,7 +489,7 @@ export default function OnboardingPage() {
               disabled={state.currentStep === 0}
               className="px-6 py-3 bg-bicicleta-surface2 border-2 border-bicicleta-border text-bicicleta-text font-semibold rounded-lg hover:border-bicicleta-accent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              Back
+              Atrás
             </button>
 
             {state.currentStep < totalSteps - 1 ? (
@@ -498,7 +498,7 @@ export default function OnboardingPage() {
                 disabled={!canAdvance()}
                 className="px-6 py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent-light disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Next
+                Siguiente
               </button>
             ) : (
               <button
@@ -506,7 +506,7 @@ export default function OnboardingPage() {
                 disabled={!canAdvance()}
                 className="px-6 py-3 bg-bicicleta-success text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-success/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Complete
+                Completar
               </button>
             )}
           </div>
@@ -538,11 +538,11 @@ function QuizStep({
   return (
     <div className="space-y-8">
       <h2 className="text-3xl font-bold text-bicicleta-text">
-        Financial Knowledge Assessment
+        Evaluación de conocimientos financieros
       </h2>
       <p className="text-bicicleta-text-muted">
-        Answer the following questions to help us understand your level of financial
-        knowledge.
+        Responde las siguientes preguntas para ayudarnos a entender tu nivel de
+        conocimiento financiero.
       </p>
 
       {quiz.questions.map((question, questionIndex) => {
@@ -560,7 +560,7 @@ function QuizStep({
         return (
           <div key={question.id} className="space-y-4">
             <h3 className="text-lg font-semibold text-bicicleta-text">
-              Question {questionIndex + 1}: {question.question}
+              Pregunta {questionIndex + 1}: {question.question}
             </h3>
 
             <div className="grid grid-cols-1 gap-3">
@@ -591,7 +591,7 @@ function QuizStep({
                 }`}
               >
                 <p className="font-semibold mb-2">
-                  {isAnswerCorrect ? '✓ Correct' : '✗ Incorrect'}
+                  {isAnswerCorrect ? '✓ Correcto' : '✗ Incorrecto'}
                 </p>
                 <p className="text-sm">{question.explanation}</p>
               </div>
@@ -622,7 +622,7 @@ function FormStep({
           {section.title}
         </h2>
         <p className="text-bicicleta-text-muted">
-          {section.description || 'Please complete the requested information'}
+          {section.description || 'Completa la información solicitada'}
         </p>
       </div>
 
@@ -664,7 +664,7 @@ function FormField({
           type="text"
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={question.placeholder || 'Enter your answer'}
+          placeholder={question.placeholder || 'Ingresa tu respuesta'}
           className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 transition-all"
         />
       )}
@@ -674,7 +674,7 @@ function FormField({
           type="number"
           value={value || ''}
           onChange={(e) => onChange(e.target.value ? parseFloat(e.target.value) : '')}
-          placeholder={question.placeholder || 'Enter a number'}
+          placeholder={question.placeholder || 'Ingresa un número'}
           className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 transition-all"
         />
       )}
@@ -683,7 +683,7 @@ function FormField({
         <textarea
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={question.placeholder || 'Enter your answer'}
+          placeholder={question.placeholder || 'Ingresa tu respuesta'}
           rows={4}
           className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 transition-all"
         />
@@ -742,7 +742,7 @@ function FormField({
           onChange={(e) => onChange(e.target.value)}
           className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 transition-all"
         >
-          <option value="">Select an option</option>
+          <option value="">Selecciona una opción</option>
           {question.options.map((option: any) => (
             <option key={option.value} value={option.value}>
               {option.label}
