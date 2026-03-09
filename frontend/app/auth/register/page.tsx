@@ -208,34 +208,34 @@ export default function RegisterPage() {
         <div className="space-y-4">
           <button
             onClick={() => selectAuthMethod('otp')}
-            className="w-full p-4 border-2 border-primary-border bg-primary-bg rounded-lg hover:border-primary-accent hover:bg-primary-surface transition-all text-left"
+            className="w-full p-4 border-2 border-bicicleta-border bg-bicicleta-bg rounded-lg hover:border-bicicleta-accent hover:bg-bicicleta-surface transition-all text-left"
           >
-            <h3 className="text-primary-accent font-semibold mb-1">
+            <h3 className="text-bicicleta-accent font-semibold mb-1">
               Código por correo
             </h3>
-            <p className="text-primary-text/70 text-sm">
+            <p className="text-bicicleta-text-muted text-sm">
               Verifica tu identidad con un código de 6 dígitos
             </p>
           </button>
 
           <button
             onClick={() => selectAuthMethod('password')}
-            className="w-full p-4 border-2 border-primary-border bg-primary-bg rounded-lg hover:border-primary-accent hover:bg-primary-surface transition-all text-left"
+            className="w-full p-4 border-2 border-bicicleta-border bg-bicicleta-bg rounded-lg hover:border-bicicleta-accent hover:bg-bicicleta-surface transition-all text-left"
           >
-            <h3 className="text-primary-accent font-semibold mb-1">
+            <h3 className="text-bicicleta-accent font-semibold mb-1">
               Correo y contraseña
             </h3>
-            <p className="text-primary-text/70 text-sm">
+            <p className="text-bicicleta-text-muted text-sm">
               Crea una cuenta con contraseña
             </p>
           </button>
         </div>
 
-        <div className="mt-6 text-center text-sm text-primary-text/70">
+        <div className="mt-6 text-center text-sm text-bicicleta-text-muted">
           ¿Ya tienes cuenta?{' '}
           <a
             href="/auth/login"
-            className="text-primary-accent hover:underline font-medium"
+            className="text-bicicleta-accent hover:underline font-medium"
           >
             Inicia sesión
           </a>
@@ -256,7 +256,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="fullName"
-                className="block text-sm font-medium text-primary-text mb-2"
+                className="block text-sm font-medium text-bicicleta-text mb-2"
               >
                 Nombre completo
               </label>
@@ -269,14 +269,14 @@ export default function RegisterPage() {
                 }
                 placeholder="Tu nombre"
                 disabled={state.loading}
-                className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               />
             </div>
 
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-primary-text mb-2"
+                className="block text-sm font-medium text-bicicleta-text mb-2"
               >
                 Correo electrónico
               </label>
@@ -289,7 +289,7 @@ export default function RegisterPage() {
                 }
                 placeholder="tu@correo.com"
                 disabled={state.loading}
-                className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               />
             </div>
 
@@ -302,7 +302,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={state.loading}
-              className="w-full py-3 bg-primary-accent text-primary-bg font-semibold rounded-lg hover:bg-primary-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {state.loading ? 'Enviando código...' : 'Continuar'}
             </button>
@@ -312,7 +312,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => selectAuthMethod('password')}
-              className="text-sm text-primary-accent hover:underline"
+              className="text-sm text-bicicleta-accent hover:underline"
             >
               Usar contraseña en su lugar
             </button>
@@ -329,9 +329,9 @@ export default function RegisterPage() {
       >
         <div className="space-y-6">
           <div>
-            <p className="text-sm text-primary-text/70 mb-6 text-center">
+            <p className="text-sm text-bicicleta-text-muted mb-6 text-center">
               Código enviado a:{' '}
-              <span className="text-primary-accent font-medium">
+              <span className="text-bicicleta-accent font-medium">
                 {state.email}
               </span>
             </p>
@@ -360,13 +360,13 @@ export default function RegisterPage() {
                 }))
               }
               disabled={state.loading}
-              className="text-sm text-primary-accent hover:underline disabled:opacity-50"
+              className="text-sm text-bicicleta-accent hover:underline disabled:opacity-50"
             >
               Volver
             </button>
           </div>
 
-          <p className="text-xs text-primary-text/50 text-center">
+          <p className="text-xs text-bicicleta-text/50 text-center">
             El código expira en 15 minutos
           </p>
         </div>
@@ -384,7 +384,7 @@ export default function RegisterPage() {
         <div>
           <label
             htmlFor="fullName"
-            className="block text-sm font-medium text-primary-text mb-2"
+            className="block text-sm font-medium text-bicicleta-text mb-2"
           >
             Nombre completo
           </label>
@@ -397,14 +397,14 @@ export default function RegisterPage() {
             }
             placeholder="Tu nombre"
             disabled={state.loading}
-            className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           />
         </div>
 
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-primary-text mb-2"
+            className="block text-sm font-medium text-bicicleta-text mb-2"
           >
             Correo electrónico
           </label>
@@ -417,14 +417,14 @@ export default function RegisterPage() {
             }
             placeholder="tu@correo.com"
             disabled={state.loading}
-            className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           />
         </div>
 
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-primary-text mb-2"
+            className="block text-sm font-medium text-bicicleta-text mb-2"
           >
             Contraseña
           </label>
@@ -437,14 +437,14 @@ export default function RegisterPage() {
             }
             placeholder="Mínimo 6 caracteres"
             disabled={state.loading}
-            className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           />
         </div>
 
         <div>
           <label
             htmlFor="passwordConfirm"
-            className="block text-sm font-medium text-primary-text mb-2"
+            className="block text-sm font-medium text-bicicleta-text mb-2"
           >
             Confirmar contraseña
           </label>
@@ -460,7 +460,7 @@ export default function RegisterPage() {
             }
             placeholder="Confirma tu contraseña"
             disabled={state.loading}
-            className="w-full px-4 py-3 bg-primary-bg border-2 border-primary-border rounded-lg text-primary-text placeholder-primary-text/40 focus:outline-none focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full px-4 py-3 bg-bicicleta-bg border-2 border-bicicleta-border rounded-lg text-bicicleta-text placeholder-bicicleta-text-dim focus:outline-none focus:border-bicicleta-accent focus:ring-2 focus:ring-bicicleta-accent/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           />
         </div>
 
@@ -473,7 +473,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={state.loading}
-          className="w-full py-3 bg-primary-accent text-primary-bg font-semibold rounded-lg hover:bg-primary-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="w-full py-3 bg-bicicleta-accent text-bicicleta-bg font-semibold rounded-lg hover:bg-bicicleta-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           {state.loading ? 'Creando cuenta...' : 'Crear cuenta'}
         </button>
@@ -483,17 +483,17 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={() => selectAuthMethod('otp')}
-          className="text-sm text-primary-accent hover:underline"
+          className="text-sm text-bicicleta-accent hover:underline"
         >
           Usar código por correo en su lugar
         </button>
       </div>
 
-      <div className="mt-6 text-center text-sm text-primary-text/70">
+      <div className="mt-6 text-center text-sm text-bicicleta-text-muted">
         ¿Ya tienes cuenta?{' '}
         <a
           href="/auth/login"
-          className="text-primary-accent hover:underline font-medium"
+          className="text-bicicleta-accent hover:underline font-medium"
         >
           Inicia sesión
         </a>

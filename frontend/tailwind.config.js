@@ -8,11 +8,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'primary-bg': '#0f0e0c',
-        'primary-surface': '#1a1916',
-        'primary-border': '#2e2c28',
-        'primary-accent': '#c9a84c',
-        'primary-text': '#f0ece4',
+        bicicleta: {
+          bg: '#0a0a0f',
+          surface: '#13131a',
+          surface2: '#1c1c26',
+          border: '#2a2a3d',
+          accent: '#7c6af7',
+          'accent-light': '#a394ff',
+          'accent-glow': 'rgba(124, 106, 247, 0.15)',
+          text: '#f0f0f8',
+          'text-muted': '#8080a0',
+          'text-dim': '#4a4a6a',
+          success: '#4ade80',
+          error: '#f87171',
+        },
       },
     },
   },

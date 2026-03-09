@@ -35,7 +35,7 @@ export async function proxy(request: NextRequest) {
     }
 
     if (pathname.startsWith('/admin')) {
-      const userRole = user.user_metadata?.role || user.app_metadata?.role
+      const userRole = user.user_metadata?.['role'] || user.app_metadata?.['role']
 
       if (userRole !== 'admin') {
         return NextResponse.redirect(new URL('/login', request.url))

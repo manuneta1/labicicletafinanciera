@@ -8,12 +8,12 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className={`${dmSans.className} min-h-screen bg-primary-bg flex flex-col items-center justify-center px-4`}>
+    <div className={`${dmSans.className} min-h-screen bg-bicicleta-bg flex flex-col items-center justify-center px-4`}>
       <div className="mb-12 text-center">
-        <h2 className="text-4xl font-bold text-primary-accent mb-2">
+        <h2 className="text-4xl font-bold text-bicicleta-accent mb-2">
           🚴 La Bicicleta Financiera
         </h2>
-        <p className="text-primary-text/60">
+        <p className="text-bicicleta-text-muted">
           Acompañamiento de finanzas personales
         </p>
       </div>
