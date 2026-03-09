@@ -380,11 +380,12 @@ export default function OnboardingPage() {
           <div className="bg-bicicleta-surface border-2 border-bicicleta-border rounded-xl p-8 text-center">
             <div className="mb-6 text-6xl">🚴</div>
             <h1 className="text-3xl font-bold text-bicicleta-text mb-4">
-              Welcome to La Bicicleta Financiera!
+              Bienvenido a La Bicicleta Financiera!
             </h1>
             <p className="text-bicicleta-text-muted mb-8 leading-relaxed">
-              You're about to start a transformation journey in your personal finances.
-              Answer these questions so we can personalize your experience.
+              Vas a empezar un viaje de transformación en tus finanzas personales.
+              Responde las siguientes preguntas para ayudarnos a entender tu nivel de
+              conocimiento financiero.
             </p>
             {state.error && (
               <div className="p-3 bg-bicicleta-error/20 border-2 border-bicicleta-error rounded-lg text-bicicleta-error text-sm mb-4">
