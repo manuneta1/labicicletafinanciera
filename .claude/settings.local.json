@@ -5,7 +5,8 @@
       "Bash(npm install next@latest react@latest react-dom@latest typescript@latest tailwindcss@latest postcss@latest autoprefixer@latest @types/react@latest @types/node@latest)",
       "Bash(npm install)",
       "Bash(npm audit fix)",
-      "Bash(npm audit fix --force)"
+      "Bash(npm audit fix --force)",
+      "Bash(npm install @supabase/supabase-js @supabase/ssr)"
     ]
   }
 }
